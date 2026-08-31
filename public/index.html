@@ -322,7 +322,7 @@
     <div class="m-row"><span class="m-ico">🆔</span><div><div class="m-lbl">Mã học phần</div><div class="m-val" id="mCode"></div></div></div>
     <div class="m-row"><span class="m-ico">👨‍🏫</span><div><div class="m-lbl">Giảng viên</div><div class="m-val" id="mGv"></div></div></div>
     <div class="m-row"><span class="m-ico">🗓️</span><div><div class="m-lbl">Thời gian học</div><div class="m-val" id="mTime"></div></div></div>
-    <div class="m-row"><span class="m-ico">📅</span><div><div class="m-lbl">Học kỳ</div><div class="m-val" id="mSem"></div></div></div>
+    <div class="m-row"><span class="m-ico">📅</span><div><div class="m-lbl">Học kỳ (Bắt đầu - Kết thúc)</div><div class="m-val" id="mSem"></div></div></div>
     <div class="m-row"><span class="m-ico">📍</span><div><div class="m-lbl">Phòng học</div><div class="m-val" id="mRoom"></div></div></div>
     <button class="m-close" onclick="closeModal()">Đóng</button>
   </div>
@@ -390,6 +390,29 @@ function fmt(d){ return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullY
 function fmtS(d){ return `${pad(d.getDate())}/${pad(d.getMonth()+1)}`; }
 function pad(n){ return String(n).padStart(2,'0'); }
 function sameDay(a,b){ return a.toDateString()===b.toDateString(); }
+
+function parseDateStr(str) {
+  if (!str) return null;
+  const parts = str.split('/');
+  if (parts.length !== 3) return null;
+  const d = parseInt(parts[0], 10);
+  const m = parseInt(parts[1], 10) - 1;
+  const y = parseInt(parts[2], 10);
+  return new Date(y, m, d);
+}
+
+function isSubjectInWeek(sub, wStart) {
+  const startDate = parseDateStr(sub.NGAY_BD_TG);
+  const endDate = parseDateStr(sub.NGAY_KT_TG);
+  
+  if (!startDate || !endDate) return true; // Nếu không có ngày, luôn hiện
+  
+  const wEnd = add(wStart, 6);
+  wEnd.setHours(23, 59, 59, 999);
+  
+  // Môn học diễn ra trong tuần nếu: Bắt đầu TRƯỚC KHI tuần kết thúc VÀ Kết thúc SAU KHI tuần bắt đầu
+  return startDate <= wEnd && endDate >= wStart;
+}
 
 /* ══════════════════════════════════════════
    WEEK NAVIGATION
@@ -462,6 +485,8 @@ function renderBody(subs){
   for(let t=1;t<=MAX_TIET;t++) tc.appendChild(el('div','tiet-num',String(t)));
   body.appendChild(tc);
 
+  let displayedCount = 0;
+
   for(let d=0;d<6;d++){
     const dc = el('div','day-col');
     dc.style.height = `${MAX_TIET*TIET_H}px`;
@@ -471,6 +496,11 @@ function renderBody(subs){
     dc.appendChild(bg);
 
     subs.forEach(sub=>{
+      // CHỈ HIỂN THỊ NẾU MÔN HỌC DIỄN RA TRONG TUẦN HIỆN TẠI
+      if (!isSubjectInWeek(sub, weekStart)) {
+        return;
+      }
+
       const k     = sub.MA_LOP||sub.TEN_MON;
       const color = colorOf[k]||COLORS[0];
       const icon  = iconOf[k] ||'📚';
@@ -479,6 +509,8 @@ function renderBody(subs){
       scheds.forEach(sc=>{
         if(dayIdx(sc.day)!==d) return;
         if(sc.startTiet<1||sc.endTiet>MAX_TIET) return;
+
+        displayedCount++;
 
         const top = (sc.startTiet-1)*TIET_H + 2;
         const h   = (sc.endTiet-sc.startTiet+1)*TIET_H - 4;
@@ -503,12 +535,27 @@ function renderBody(subs){
     body.appendChild(dc);
   }
 
+  // Cập nhật số môn hiển thị trong tuần
+  if (subs.length > 0) {
+     const cntEl = document.getElementById('resCnt');
+     if (cntEl) cntEl.textContent = `Tuần này có ${displayedCount} tiết`;
+  }
+
   if(subs.length===0){
     const ov = el('div','empty-overlay');
     ov.innerHTML = `
       <div class="ei">📅</div>
       <div class="et">Nhập MSSV để xem thời khoá biểu</div>
       <div class="es">Dùng ô tìm kiếm phía trên rồi bấm <strong>Xem thời khóa biểu</strong></div>
+    `;
+    body.appendChild(ov);
+  } else if (displayedCount === 0) {
+    const ov = el('div','empty-overlay');
+    ov.style.background = 'transparent';
+    ov.innerHTML = `
+      <div class="ei">🏖️</div>
+      <div class="et">Tuần này trống lịch</div>
+      <div class="es">Không có môn nào diễn ra trong tuần này!</div>
     `;
     body.appendChild(ov);
   }
@@ -545,9 +592,17 @@ async function doSearch(){
     document.getElementById('sbName').textContent   = name;
     document.getElementById('resName').textContent  = name;
     document.getElementById('resMssv').textContent  = `MSSV: ${mssv}`;
-    document.getElementById('resCnt').textContent   = `${json.data.length} môn học`;
     document.getElementById('resCard').classList.add('show');
 
+    // Chuyển tuần hiện tại về tuần bắt đầu học của môn đầu tiên (nếu có)
+    if (subjects.length > 0 && subjects[0].NGAY_BD_TG) {
+      const firstDate = parseDateStr(subjects[0].NGAY_BD_TG);
+      if (firstDate) {
+        weekStart = monday(firstDate);
+      }
+    }
+
+    renderHead();
     renderBody(subjects);
 
   }catch(err){
