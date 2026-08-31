@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: tkb-api
+    runtime: node
+    # Cài package rồi build schedule_db.json từ file Excel trong repo.
+    buildCommand: npm install && npm run build-db
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # API_KEY: bật nếu muốn bảo vệ API. sync:false = tự nhập trên dashboard,
+      # không lưu vào git. Xoá 3 dòng dưới nếu muốn API mở hoàn toàn.
+      - key: API_KEY
+        sync: false
+    plan: free
+    autoDeploy: true

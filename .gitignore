@@ -1,0 +1,12 @@
+node_modules/
+
+# File build tự sinh ra từ Excel — build lại trên Render nên không cần commit.
+# Nếu muốn deploy nhanh mà KHÔNG build lại, hãy commit schedule_db.json
+# và xoá dòng dưới đây.
+schedule_db.json
+schedule_db_backup.json
+schedule_db_updated.json
+
+# OS
+.DS_Store
+Thumbs.db
