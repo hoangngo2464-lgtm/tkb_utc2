@@ -66,6 +66,9 @@ app.use((req, _res, next) => {
   next();
 });
 
+/* ── Phục vụ giao diện web từ thư mục public/ ───────────────────────── */
+app.use(express.static(path.join(__dirname, 'public')));
+
 /* ── API KEY (tuỳ chọn) ──────────────────────────────────────────────
    Đặt API_KEY trong env để bắt buộc client gửi key.
    Không đặt → API mở (tiện cho dev local).
