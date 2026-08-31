@@ -195,7 +195,7 @@
       border-top:9px solid var(--accent);
     }
 
-    .cat-svg{width:90px;height:100px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.12))}
+    .cat-svg{width:90px;height:100px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.12));pointer-events:auto;cursor:pointer}
 
     /* Cat animations */
     .cat-tail{transform-origin:22px 72px;animation:tailWag 1.8s ease-in-out infinite}
@@ -217,6 +217,29 @@
 
     /* Cat eye follow */
     .cat-pupil-l,.cat-pupil-r{transition:cx .3s,cy .3s}
+
+    /* Cat kiss */
+    .cat-wrap.kiss .cat-svg{animation:catKissPulse .55s ease}
+    @keyframes catKissPulse{
+      0%{transform:scale(1) rotate(0)}
+      35%{transform:scale(1.08) rotate(-4deg)}
+      65%{transform:scale(1.08) rotate(4deg)}
+      100%{transform:scale(1) rotate(0)}
+    }
+    .cat-wrap.kiss #catMouth{opacity:0}
+    .cat-wrap.kiss #catKissLips{opacity:1}
+    #catKissLips{opacity:0;transition:opacity .1s}
+
+    .heart-fx{
+      position:absolute;pointer-events:none;font-size:16px;
+      animation:heartFloat 1.1s ease-out forwards;z-index:60;
+      right:36px;top:24px;
+    }
+    @keyframes heartFloat{
+      0%{opacity:0;transform:translate(0,0) scale(.3)}
+      18%{opacity:1;transform:translate(0,-8px) scale(1)}
+      100%{opacity:0;transform:translate(var(--dx,10px),-72px) scale(1.15) rotate(12deg)}
+    }
 
     /* ═══ MODAL ═══ */
     .m-overlay{
@@ -348,7 +371,7 @@
 <!-- ═══ CAT ═══ -->
 <div class="cat-wrap walk" id="catWrap">
   <div class="cat-speech" id="catSpeech">Nhập MSSV để xem thời khoá biểu nhé! 🐱</div>
-  <svg class="cat-svg" viewBox="0 0 100 100">
+  <svg class="cat-svg" viewBox="0 0 100 100" onclick="catKiss()">
     <!-- Tail -->
     <path class="cat-tail" d="M22,72 C8,62 4,46 16,40 C20,38 24,42 20,48" fill="none" stroke="#FF8A58" stroke-width="5.5" stroke-linecap="round"/>
     <!-- Body -->
@@ -377,7 +400,9 @@
     <!-- Nose -->
     <ellipse cx="52" cy="47" rx="2.5" ry="2" fill="#FFAB91"/>
     <!-- Mouth -->
-    <path d="M50,49 Q52,52 54,49" fill="none" stroke="#6D4C41" stroke-width="1" stroke-linecap="round"/>
+    <path id="catMouth" d="M50,49 Q52,52 54,49" fill="none" stroke="#6D4C41" stroke-width="1" stroke-linecap="round"/>
+    <!-- Kiss lips (hidden by default, shown when kissing) -->
+    <ellipse id="catKissLips" cx="52" cy="49.5" rx="3.2" ry="2.4" fill="#E4536B"/>
     <!-- Whiskers -->
     <line x1="27" y1="43" x2="40" y2="45" stroke="#6D4C41" stroke-width=".8" stroke-linecap="round"/>
     <line x1="26" y1="48" x2="39" y2="48" stroke="#6D4C41" stroke-width=".8" stroke-linecap="round"/>
@@ -560,10 +585,8 @@ async function doSearch(){
     document.getElementById('stuId').textContent=`MSSV: ${mssv}`;
     document.getElementById('stuCard').classList.add('show');
 
-    if(subjects.length>0&&subjects[0].NGAY_BD_TG){
-      const fd=parseDS(subjects[0].NGAY_BD_TG);
-      if(fd)weekStart=monday(fd);
-    }
+    // Luôn hiển thị đúng tuần của hôm nay ngay sau khi tìm kiếm
+    weekStart=monday(new Date());
     renderHead();renderBody(subjects);
     showCatSpeech('Nhấn vào môn học để xem chi tiết nhé! 🐾');
     triggerCatGuide();
@@ -608,6 +631,29 @@ function triggerCatGuide(){
   const cw=document.getElementById('catWrap');
   cw.classList.add('guide');
   setTimeout(()=>cw.classList.remove('guide'),6000);
+}
+
+/* Mèo hôn khi được bấm vào */
+const KISS_MSGS=['Mwah! 💋','Yêu bạn nè! 💕','Hôn cái nào! 😘','Chụt chụt~ 💖'];
+function spawnHeart(delay){
+  setTimeout(()=>{
+    const wrap=document.getElementById('catWrap');
+    const h=el('div','heart-fx');
+    h.textContent=['💕','💖','😘','💗'][Math.floor(Math.random()*4)];
+    const dx=(Math.random()*44-22).toFixed(0);
+    h.style.setProperty('--dx',dx+'px');
+    h.style.right=(30+Math.random()*22)+'px';
+    h.style.top=(18+Math.random()*16)+'px';
+    wrap.appendChild(h);
+    setTimeout(()=>h.remove(),1200);
+  },delay);
+}
+function catKiss(){
+  const wrap=document.getElementById('catWrap');
+  wrap.classList.add('kiss');
+  showCatSpeech(KISS_MSGS[Math.floor(Math.random()*KISS_MSGS.length)]);
+  spawnHeart(0);spawnHeart(150);spawnHeart(320);
+  setTimeout(()=>wrap.classList.remove('kiss'),600);
 }
 
 /* ═══ UTILS ═══ */
