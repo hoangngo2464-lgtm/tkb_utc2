@@ -1,13 +1,5 @@
 /**
- * server.mjs – TKB API (Thời khoá biểu)
- * ---------------------------------------------------------------------------
- * BƯỚC 3 của pipeline: phục vụ dữ liệu TKB đã build (schedule_db.json) qua HTTP.
- *
- * Endpoint:
- *   GET /                 → health check + mô tả
- *   GET /api/tkb/:mssv    → thời khoá biểu của 1 sinh viên
- *
- * Chạy:  node server.mjs   (mặc định cổng 3000, hoặc PORT trong env)
+ * server.mjs – TKB API & Web Interface
  */
 
 import express from 'express';
@@ -43,8 +35,6 @@ const fail = (res, msg, code = 400) => res.status(code).json({ ok: false, error:
 /* ── Express ─────────────────────────────────────────────────────────── */
 const app = express();
 
-// CORS: mặc định cho phép mọi domain. Muốn giới hạn, đặt CORS_ORIGINS
-// dạng "https://a.com,https://b.com" trong biến môi trường.
 const origins = (process.env.CORS_ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean);
 app.use(
   cors({
@@ -66,17 +56,13 @@ app.use((req, _res, next) => {
   next();
 });
 
-/* ── Phục vụ giao diện web từ thư mục public/ ───────────────────────── */
+/* ── Phục vụ giao diện web tĩnh từ thư mục public ────────────────────── */
 app.use(express.static(path.join(__dirname, 'public')));
 
-/* ── API KEY (tuỳ chọn) ──────────────────────────────────────────────
-   Đặt API_KEY trong env để bắt buộc client gửi key.
-   Không đặt → API mở (tiện cho dev local).
-   Client gửi:  header  x-api-key: <key>   hoặc   query  ?api_key=<key>
-   ──────────────────────────────────────────────────────────────────── */
+/* ── API KEY (tuỳ chọn) ────────────────────────────────────────────── */
 const API_KEY = process.env.API_KEY ?? null;
 app.use((req, res, next) => {
-  if (req.path === '/') return next(); // health check luôn công khai
+  if (req.path === '/' || req.path === '/index.html') return next();
   if (!API_KEY) return next();
 
   const provided = req.headers['x-api-key'] ?? req.query.api_key ?? '';
@@ -85,20 +71,24 @@ app.use((req, res, next) => {
   return res.status(401).json({
     ok: false,
     error: 'Thiếu hoặc sai API key.',
-    hint: 'Thêm header  x-api-key: <key>  hoặc query  ?api_key=<key>',
   });
 });
 
-/* ── / – Welcome / health check ──────────────────────────────────────── */
-app.get('/', (_req, res) =>
-  res.json({
-    service: 'TKB API – Thời khoá biểu sinh viên',
-    status: 'online',
-    docs: {
-      'GET /api/tkb/:mssv': 'Thời khoá biểu của 1 sinh viên (theo MSSV)',
-    },
-  })
-);
+/* ── Trang chủ Giao diện HTML ───────────────────────────────────────── */
+app.get('/', (_req, res) => {
+  const indexPath = path.join(__dirname, 'public', 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.json({
+      service: 'TKB API – Thời khoá biểu sinh viên',
+      status: 'online',
+      docs: {
+        'GET /api/tkb/:mssv': 'Thời khoá biểu của 1 sinh viên (theo MSSV)',
+      },
+    });
+  }
+});
 
 /* ── /api/tkb/:mssv ──────────────────────────────────────────────────── */
 app.get('/api/tkb/:mssv', async (req, res) => {
@@ -112,9 +102,9 @@ app.get('/api/tkb/:mssv', async (req, res) => {
 
     if (studentData) {
       if (Array.isArray(studentData)) {
-        items = studentData; // định dạng cũ
+        items = studentData;
       } else {
-        items = studentData.tkb || []; // định dạng mới có ho_ten
+        items = studentData.tkb || [];
         ho_ten = studentData.ho_ten || null;
       }
     }
@@ -124,7 +114,6 @@ app.get('/api/tkb/:mssv', async (req, res) => {
     }
 
     const registered = items.map((item, idx) => {
-      // Sửa lỗi encoding phổ biến từ Excel.
       const rawTkb = String(item.thoi_khoa_bieu ?? '')
         .replace(/Th\?i gian h\?c/g, 'Thời gian học')
         .replace(/Th\?i/g, 'Thời')
@@ -135,7 +124,6 @@ app.get('/api/tkb/:mssv', async (req, res) => {
 
       const parts = rawTkb.split(';').map((p) => p.trim());
 
-      // Tách ngày bắt đầu / kết thúc.
       let ngayBd = '';
       let ngayKt = '';
       const datePart = parts.find((p) => p.startsWith('Thời gian học:'));
@@ -147,16 +135,13 @@ app.get('/api/tkb/:mssv', async (req, res) => {
         }
       }
 
-      // Tách giảng viên.
       const gvPart = parts.find((p) => p.startsWith('GV:'));
       const giangVien = gvPart ? gvPart.replace('GV:', '').trim() : '';
 
-      // Tách lịch học (bỏ phần "Thời gian học" và "GV").
       const scheduleParts = parts.filter(
         (p) => !p.startsWith('Thời gian học:') && !p.startsWith('GV:')
       );
       const formattedSchedules = scheduleParts.map((p) => {
-        // Match "6(11->14)P402C2 Giảng đường C2"
         const match = p.match(/^(\d)\((\d+)->(\d+)\)(.*)$/);
         if (match) {
           const dow = match[1];
