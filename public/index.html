@@ -1,659 +1,620 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Thời Khoá Biểu Sinh Viên – UTC2</title>
-  <meta name="description" content="Tra cứu thời khoá biểu sinh viên Trường Đại học Giao thông Vận tải TP.HCM – UTC2" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    /* ═══ TOKENS ═══ */
-    :root {
-      --sw: 230px;
-      --th: 54px;
-      --mt: 15;
-      --blue:   #3B82F6;
-      --blue2:  #60A5FA;
-      --indigo: #6366F1;
-      --bg:     #E8F4FD;
-      --white:  #FFFFFF;
-      --border: #DBEAFE;
-      --text:   #1E293B;
-      --muted:  #64748B;
-      --shadow: 0 4px 24px rgba(59,130,246,.10);
-      --r: 16px;
+    :root{
+      --bg:#F0F4FF;--surface:#FFFFFF;--primary:#3B82F6;--primary-l:#DBEAFE;
+      --accent:#FF7043;--accent-l:#FFF0EB;--text:#1E293B;--muted:#64748B;
+      --border:#E2E8F0;--shadow:0 4px 24px rgba(59,130,246,.08);
+      --r:16px;--tiet-h:52px;--max-tiet:15;
     }
     *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%;font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+    html{scroll-behavior:smooth}
+    body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;padding-bottom:140px}
 
-    /* ═══ LAYOUT ═══ */
-    .app{display:flex;min-height:100vh}
-
-    /* ═══ SIDEBAR ═══ */
-    .sidebar{
-      width:var(--sw);min-height:100vh;
-      background:var(--white);
-      box-shadow:2px 0 20px rgba(59,130,246,.07);
-      display:flex;flex-direction:column;
-      padding:22px 16px;gap:16px;
-      position:fixed;top:0;left:0;bottom:0;
-      overflow-y:auto;z-index:20;
+    /* ═══ HEADER ═══ */
+    .header{
+      position:sticky;top:0;z-index:30;
+      background:rgba(255,255,255,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+      border-bottom:1px solid var(--border);padding:12px 20px;
+      display:flex;align-items:center;gap:12px;
     }
-    .logo{display:flex;align-items:center;gap:10px;padding-bottom:6px}
-    .logo-icon{
-      width:42px;height:42px;border-radius:12px;flex-shrink:0;
-      background:linear-gradient(135deg,var(--blue),var(--blue2));
-      display:flex;align-items:center;justify-content:center;font-size:20px;
+    .h-logo{
+      width:38px;height:38px;border-radius:11px;flex-shrink:0;
+      background:linear-gradient(135deg,var(--primary),#60A5FA);
+      display:flex;align-items:center;justify-content:center;font-size:18px;
     }
-    .logo h2{font-size:18px;font-weight:800;color:var(--blue)}
-    .logo p{font-size:10px;color:var(--muted);margin-top:1px}
-
-    .sb-student{
-      background:#EFF6FF;border:1px solid #BFDBFE;border-radius:14px;
-      padding:13px;display:flex;align-items:center;gap:10px;
+    .h-title{font-size:17px;font-weight:800;color:var(--primary);line-height:1.2}
+    .h-sub{font-size:10px;color:var(--muted);font-weight:400}
+    .h-sem{
+      margin-left:auto;background:var(--primary-l);color:var(--primary);
+      font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;white-space:nowrap;
     }
-    .sb-avatar{
-      width:42px;height:42px;border-radius:50%;flex-shrink:0;
-      background:linear-gradient(135deg,var(--blue),var(--blue2));
-      display:flex;align-items:center;justify-content:center;
-      font-size:20px;color:white;
-    }
-    .sb-lbl{font-size:11px;color:var(--muted)}
-    #sbName{display:block;font-size:13px;font-weight:700;color:var(--text);line-height:1.3;margin-top:2px}
-
-    .sb-day{
-      background:linear-gradient(145deg,var(--blue),var(--blue2));
-      border-radius:16px;padding:18px 14px;color:white;text-align:center;
-      position:relative;overflow:hidden;
-    }
-    .sb-day::before,.sb-day::after{
-      content:'';position:absolute;border-radius:50%;
-      background:rgba(255,255,255,.12);
-    }
-    .sb-day::before{width:80px;height:80px;top:-20px;right:-20px}
-    .sb-day::after{width:80px;height:80px;bottom:-25px;left:-10px;background:rgba(255,255,255,.08)}
-    .sb-day .lbl{font-size:11px;opacity:.85;position:relative;z-index:1}
-    .sb-day .name{font-size:26px;font-weight:800;margin:4px 0;position:relative;z-index:1}
-    .sb-day .date{font-size:13px;opacity:.9;position:relative;z-index:1}
-
-    .sb-quote{
-      background:linear-gradient(135deg,#FFF7ED,#FEF3C7);
-      border:1px solid #FDE68A;border-radius:14px;padding:14px;margin-top:auto;
-    }
-    .sb-quote p{font-size:11.5px;color:#92400E;line-height:1.7;text-align:center;font-style:italic}
 
     /* ═══ MAIN ═══ */
-    .main{margin-left:var(--sw);flex:1;padding:26px 26px 48px;min-width:0}
+    .main{max-width:960px;margin:0 auto;padding:20px 16px 40px}
 
-    .page-hdr{text-align:center;margin-bottom:22px}
-    .page-hdr h1{
-      font-size:32px;font-weight:800;color:var(--text);
-      display:flex;align-items:center;justify-content:center;gap:10px;
-    }
-    .page-hdr .sub{font-size:14px;color:var(--muted);margin-top:6px}
-    .sem-badge{
-      display:inline-flex;align-items:center;gap:6px;
-      background:var(--white);border:1.5px solid var(--border);border-radius:10px;
-      padding:7px 16px;font-size:13px;font-weight:600;color:var(--muted);margin-top:10px;
-    }
+    .page-title{text-align:center;margin-bottom:20px}
+    .page-title h1{font-size:26px;font-weight:800;color:var(--text)}
+    .page-title p{font-size:13px;color:var(--muted);margin-top:4px}
 
-    .err-bar{
-      background:#FEF2F2;border:1px solid #FECACA;border-radius:12px;
-      padding:12px 18px;color:#DC2626;font-size:13.5px;
-      margin-bottom:16px;display:none;align-items:center;gap:8px;
-    }
-    .err-bar.show{display:flex}
-
-    .res-card{
-      background:linear-gradient(135deg,var(--blue),var(--blue2));
-      border-radius:14px;padding:15px 20px;color:white;
-      margin-bottom:18px;display:none;align-items:center;gap:14px;
-      box-shadow:0 8px 24px rgba(59,130,246,.25);
-    }
-    .res-card.show{display:flex}
-    .res-avt{
-      width:48px;height:48px;border-radius:50%;flex-shrink:0;
-      background:rgba(255,255,255,.22);
-      display:flex;align-items:center;justify-content:center;font-size:24px;
-    }
-    .res-name{font-size:17px;font-weight:700}
-    .res-mssv{font-size:12px;opacity:.85;margin-top:2px}
-    .res-cnt{
-      margin-left:auto;background:rgba(255,255,255,.2);
-      border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;white-space:nowrap;
-    }
-
-    .srch{
-      background:var(--white);border-radius:14px;padding:14px 18px;
-      box-shadow:var(--shadow);margin-bottom:22px;
-      display:flex;align-items:center;gap:12px;
+    /* ═══ SEARCH ═══ */
+    .search-box{
+      background:var(--surface);border-radius:var(--r);padding:6px;
+      box-shadow:var(--shadow);display:flex;gap:6px;margin-bottom:16px;
       border:1.5px solid var(--border);transition:border-color .2s;
     }
-    .srch:focus-within{border-color:var(--blue)}
-    .srch .ico{font-size:18px;color:var(--muted);flex-shrink:0}
-    .srch input{
-      flex:1;border:none;outline:none;font-family:inherit;
-      font-size:15px;color:var(--text);background:transparent;
+    .search-box:focus-within{border-color:var(--primary)}
+    .search-box input{
+      flex:1;border:none;outline:none;font-family:inherit;font-size:15px;
+      color:var(--text);padding:10px 14px;background:transparent;min-width:0;
     }
-    .srch input::placeholder{color:#94A3B8}
-    .srch-btn{
-      background:linear-gradient(135deg,var(--blue),var(--blue2));
-      color:white;border:none;border-radius:10px;padding:11px 22px;
-      font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;
-      transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:6px;
+    .search-box input::placeholder{color:#94A3B8}
+    .s-btn{
+      background:linear-gradient(135deg,var(--primary),#60A5FA);color:#fff;
+      border:none;border-radius:12px;padding:10px 20px;font-family:inherit;
+      font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;
+      white-space:nowrap;display:flex;align-items:center;gap:6px;flex-shrink:0;
     }
-    .srch-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(59,130,246,.35)}
-    .srch-btn:disabled{opacity:.7;cursor:not-allowed}
+    .s-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(59,130,246,.3)}
+    .s-btn:disabled{opacity:.6;cursor:not-allowed}
+
+    /* ═══ ERROR ═══ */
+    .err{
+      background:#FEF2F2;border:1px solid #FECACA;border-radius:12px;
+      padding:12px 16px;color:#DC2626;font-size:13px;margin-bottom:14px;
+      display:none;align-items:center;gap:8px;
+    }
+    .err.show{display:flex}
+
+    /* ═══ STUDENT CARD ═══ */
+    .stu-card{
+      background:linear-gradient(135deg,var(--primary),#60A5FA);
+      border-radius:var(--r);padding:16px 20px;color:#fff;
+      margin-bottom:16px;display:none;align-items:center;gap:14px;
+      box-shadow:0 8px 28px rgba(59,130,246,.2);
+    }
+    .stu-card.show{display:flex}
+    .stu-av{
+      width:46px;height:46px;border-radius:50%;flex-shrink:0;
+      background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:22px;
+    }
+    .stu-name{font-size:16px;font-weight:700}
+    .stu-id{font-size:12px;opacity:.8;margin-top:2px}
+    .stu-cnt{
+      margin-left:auto;background:rgba(255,255,255,.18);border-radius:10px;
+      padding:7px 14px;font-size:12px;font-weight:600;white-space:nowrap;
+    }
 
     /* ═══ CALENDAR ═══ */
-    .cal-wrap{background:var(--white);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+    .cal-card{background:var(--surface);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
 
     .wk-nav{
       display:flex;align-items:center;justify-content:space-between;
-      padding:13px 20px;border-bottom:1.5px solid var(--border);
+      padding:12px 16px;border-bottom:1.5px solid var(--border);
     }
     .wk-btn{
       background:#F1F5F9;border:1px solid var(--border);border-radius:8px;
-      padding:7px 13px;font-size:18px;cursor:pointer;color:var(--muted);transition:all .2s;
+      width:36px;height:36px;font-size:16px;cursor:pointer;color:var(--muted);
+      transition:all .15s;display:flex;align-items:center;justify-content:center;
     }
-    .wk-btn:hover{background:#DBEAFE;color:var(--blue)}
-    .wk-range{font-size:14px;font-weight:600;color:var(--text)}
+    .wk-btn:hover{background:var(--primary-l);color:var(--primary);border-color:var(--primary)}
+    .wk-center{display:flex;align-items:center;gap:8px}
+    .wk-range{font-size:14px;font-weight:700;color:var(--text)}
+    .wk-today{
+      font-size:11px;font-weight:600;color:var(--primary);background:var(--primary-l);
+      border:1px solid #BFDBFE;border-radius:6px;padding:4px 10px;cursor:pointer;
+      transition:all .15s;
+    }
+    .wk-today:hover{background:var(--primary);color:#fff}
 
-    /* Grid header */
-    .cal-head{
-      display:grid;
-      grid-template-columns:52px repeat(6,1fr);
-      border-bottom:2px solid var(--border);
-    }
+    .cal-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+    .cal-grid{min-width:620px;position:relative}
+
+    .cal-head{display:grid;grid-template-columns:48px repeat(6,1fr);border-bottom:2px solid var(--border)}
     .hd-corner{
       background:#F8FAFC;border-right:1px solid var(--border);
       display:flex;align-items:center;justify-content:center;
-      font-size:10px;color:var(--muted);font-weight:600;padding:12px 4px;
+      font-size:10px;color:var(--muted);font-weight:700;padding:10px 4px;
     }
-    .hd-day{padding:12px 6px;text-align:center;border-right:1px solid var(--border)}
+    .hd-day{padding:10px 4px;text-align:center;border-right:1px solid var(--border)}
     .hd-day:last-child{border-right:none}
-    .hd-day.today{background:linear-gradient(135deg,var(--blue),var(--blue2))}
-    .hd-day.today .dn,.hd-day.today .dd{color:white}
-    .dn{font-size:13px;font-weight:700;color:var(--text)}
-    .dd{font-size:11px;color:var(--muted);margin-top:2px}
+    .hd-day.today{background:linear-gradient(135deg,var(--primary),#60A5FA)}
+    .hd-day.today .dn,.hd-day.today .dd{color:#fff!important}
+    .dn{font-size:12px;font-weight:700;color:var(--text)}
+    .dd{font-size:10px;color:var(--muted);margin-top:1px}
 
-    /* Grid body */
-    .cal-body{display:grid;grid-template-columns:52px repeat(6,1fr);position:relative}
+    .cal-body{display:grid;grid-template-columns:48px repeat(6,1fr);position:relative}
     .tiet-col{border-right:1px solid var(--border)}
     .tiet-num{
-      height:var(--th);display:flex;align-items:center;justify-content:center;
-      font-size:11px;font-weight:600;color:#94A3B8;border-bottom:1px solid #F1F5F9;
+      height:var(--tiet-h);display:flex;align-items:center;justify-content:center;
+      font-size:10px;font-weight:600;color:#94A3B8;border-bottom:1px solid #F1F5F9;
     }
     .day-col{position:relative;border-right:1px solid var(--border)}
     .day-col:last-child{border-right:none}
     .day-col-bg{position:absolute;inset:0;pointer-events:none}
-    .bg-row{height:var(--th);border-bottom:1px dashed #EDF2FB}
+    .bg-row{height:var(--tiet-h);border-bottom:1px dashed #EDF2F8}
 
     /* Subject card */
     .sub-card{
       position:absolute;left:3px;right:3px;border-radius:10px;
-      padding:7px 9px;cursor:pointer;overflow:hidden;z-index:1;
+      padding:6px 8px;cursor:pointer;overflow:hidden;z-index:1;
       transition:transform .15s,box-shadow .15s;
     }
-    .sub-card:hover{transform:scale(1.025);z-index:5}
-    .sc-tiet{font-size:9.5px;font-weight:600;color:rgba(255,255,255,.85)}
+    .sub-card:hover{transform:scale(1.03);z-index:5;filter:brightness(1.08)}
+    .sub-card:active{transform:scale(.98)}
+    .sc-tiet{font-size:9px;font-weight:600;color:rgba(255,255,255,.85)}
     .sc-name{
-      font-size:11.5px;font-weight:700;color:white;margin-top:3px;line-height:1.3;
+      font-size:11px;font-weight:700;color:#fff;margin-top:2px;line-height:1.3;
       display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
     }
-    .sc-room{font-size:10px;color:rgba(255,255,255,.9);margin-top:3px;display:flex;align-items:center;gap:3px}
-    .sc-icon{position:absolute;bottom:6px;right:8px;font-size:18px;opacity:.25}
+    .sc-room{font-size:9.5px;color:rgba(255,255,255,.9);margin-top:2px;display:flex;align-items:center;gap:2px}
+    .sc-icon{position:absolute;bottom:4px;right:6px;font-size:16px;opacity:.2}
 
     /* Empty overlay */
-    .empty-overlay{
+    .empty-ov{
       position:absolute;inset:0;display:flex;flex-direction:column;
       align-items:center;justify-content:center;
-      background:rgba(255,255,255,.88);pointer-events:none;
+      background:rgba(255,255,255,.9);pointer-events:none;
       text-align:center;padding:30px;z-index:10;
     }
-    .empty-overlay .ei{font-size:52px;margin-bottom:12px}
-    .empty-overlay .et{font-size:16px;font-weight:600;margin-bottom:6px;color:var(--text)}
-    .empty-overlay .es{font-size:13px;color:var(--muted)}
+    .empty-ov .ei{font-size:48px;margin-bottom:10px}
+    .empty-ov .et{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px}
+    .empty-ov .es{font-size:12px;color:var(--muted)}
 
-    /* Modal */
+    /* ═══ CAT ═══ */
+    .cat-wrap{
+      position:fixed;bottom:16px;right:16px;z-index:50;
+      display:flex;flex-direction:column;align-items:flex-end;gap:8px;
+      pointer-events:none;
+    }
+    .cat-speech{
+      background:var(--surface);border:2px solid var(--accent);
+      border-radius:16px 16px 4px 16px;padding:10px 14px;
+      font-size:12px;font-weight:600;color:var(--text);
+      box-shadow:0 4px 20px rgba(255,112,67,.15);
+      max-width:200px;line-height:1.5;text-align:center;
+      opacity:0;transform:translateY(8px) scale(.9);
+      transition:all .4s cubic-bezier(.34,1.56,.64,1);
+      pointer-events:none;
+    }
+    .cat-speech.show{opacity:1;transform:translateY(0) scale(1)}
+    .cat-speech::after{
+      content:'';position:absolute;bottom:-8px;right:28px;
+      border-left:8px solid transparent;border-right:8px solid transparent;
+      border-top:8px solid var(--surface);
+    }
+    .cat-speech::before{
+      content:'';position:absolute;bottom:-10px;right:27px;
+      border-left:9px solid transparent;border-right:9px solid transparent;
+      border-top:9px solid var(--accent);
+    }
+
+    .cat-svg{width:90px;height:100px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.12))}
+
+    /* Cat animations */
+    .cat-tail{transform-origin:22px 72px;animation:tailWag 1.8s ease-in-out infinite}
+    @keyframes tailWag{0%,100%{transform:rotate(0)}50%{transform:rotate(18deg)}}
+
+    .cat-blink-l,.cat-blink-r{animation:blink 3.5s ease infinite}
+    .cat-blink-r{animation-delay:.1s}
+    @keyframes blink{0%,92%,100%{ry:0}96%{ry:6}}
+
+    .cat-paw-r{transform-origin:62px 88px;transition:transform .3s}
+    .cat-wrap.guide .cat-paw-r{animation:pawWave 1.2s ease-in-out infinite}
+    @keyframes pawWave{0%,100%{transform:rotate(0)}50%{transform:rotate(-25deg) translateY(-4px)}}
+
+    .cat-wrap.happy .cat-svg{animation:catBounce .6s ease}
+    @keyframes catBounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-18px)}}
+
+    .cat-wrap.walk{animation:catWalk 1s ease forwards}
+    @keyframes catWalk{from{transform:translateX(120px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+    /* Cat eye follow */
+    .cat-pupil-l,.cat-pupil-r{transition:cx .3s,cy .3s}
+
+    /* ═══ MODAL ═══ */
     .m-overlay{
-      position:fixed;inset:0;background:rgba(0,0,0,.4);
-      display:flex;align-items:center;justify-content:center;
-      z-index:100;opacity:0;pointer-events:none;transition:opacity .2s;
+      position:fixed;inset:0;background:rgba(15,23,42,.45);
+      backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+      display:flex;align-items:flex-end;justify-content:center;
+      z-index:200;opacity:0;pointer-events:none;transition:opacity .25s;
     }
     .m-overlay.open{opacity:1;pointer-events:all}
     .modal{
-      background:var(--white);border-radius:20px;padding:26px;
-      max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2);
-      transform:translateY(20px) scale(.97);transition:transform .2s;
+      background:var(--surface);border-radius:24px 24px 0 0;padding:0;
+      max-width:440px;width:100%;max-height:85vh;overflow-y:auto;
+      box-shadow:0 -8px 40px rgba(0,0,0,.15);
+      transform:translateY(100%);transition:transform .35s cubic-bezier(.32,.72,0,1);
     }
-    .m-overlay.open .modal{transform:none}
-    .m-bar{height:6px;border-radius:6px;margin-bottom:18px}
-    .m-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:14px;line-height:1.4}
-    .m-row{display:flex;align-items:flex-start;gap:9px;margin-bottom:9px}
-    .m-ico{font-size:15px;flex-shrink:0;margin-top:1px}
-    .m-lbl{font-size:11px;color:var(--muted)}
-    .m-val{font-size:13.5px;color:var(--text);font-weight:500;margin-top:1px}
+    .m-overlay.open .modal{transform:translateY(0)}
+
+    .m-color-bar{height:6px;border-radius:24px 24px 0 0}
+    .m-content{padding:24px 24px 28px}
+    .m-drag{
+      width:36px;height:4px;border-radius:4px;background:#E2E8F0;
+      margin:0 auto 16px;
+    }
+    .m-title{font-size:18px;font-weight:800;color:var(--text);line-height:1.4;margin-bottom:20px}
+
+    .m-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+    .m-ico{
+      width:36px;height:36px;border-radius:10px;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;font-size:16px;
+    }
+    .m-lbl{font-size:11px;color:var(--muted);font-weight:500}
+    .m-val{font-size:14px;color:var(--text);font-weight:600;margin-top:2px;line-height:1.4}
+
     .m-close{
-      margin-top:20px;width:100%;background:linear-gradient(135deg,var(--blue),var(--blue2));
-      color:white;border:none;border-radius:10px;padding:12px;
-      font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;
+      margin-top:20px;width:100%;background:linear-gradient(135deg,var(--primary),#60A5FA);
+      color:#fff;border:none;border-radius:14px;padding:14px;
+      font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;
+      transition:all .15s;
     }
-    .m-close:hover{opacity:.9}
+    .m-close:hover{opacity:.9;transform:translateY(-1px)}
+    .m-close:active{transform:scale(.98)}
+
+    /* ═══ RESPONSIVE ═══ */
+    @media(min-width:768px){
+      .main{padding:28px 24px 40px}
+      .page-title h1{font-size:30px}
+      .m-overlay{align-items:center}
+      .modal{border-radius:24px;max-height:80vh}
+      .m-drag{display:none}
+      .cat-svg{width:110px;height:120px}
+      .cat-speech{max-width:240px;font-size:13px}
+    }
+    @media(max-width:480px){
+      .header{padding:10px 14px}
+      .h-sem{display:none}
+      .main{padding:14px 10px 30px}
+      .page-title h1{font-size:22px}
+      .search-box{flex-direction:column}
+      .s-btn{justify-content:center}
+      .cat-svg{width:70px;height:80px}
+      .cat-wrap{bottom:10px;right:10px}
+      .cat-speech{font-size:11px;max-width:160px;padding:8px 10px}
+    }
+
+    /* ═══ SCROLLBAR ═══ */
+    .cal-scroll::-webkit-scrollbar{height:6px}
+    .cal-scroll::-webkit-scrollbar-track{background:#F1F5F9;border-radius:3px}
+    .cal-scroll::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:3px}
+    .cal-scroll::-webkit-scrollbar-thumb:hover{background:#94A3B8}
+
+    /* ═══ MISC ═══ */
+    .fade-in{animation:fadeIn .4s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   </style>
 </head>
 <body>
-<div class="app">
 
-  <!-- ═══ SIDEBAR ═══ -->
-  <aside class="sidebar">
-    <div class="logo">
-      <div class="logo-icon">🎓</div>
-      <div>
-        <h2>UTC2</h2>
-        <p>Thời khóa biểu sinh viên</p>
-      </div>
+<!-- ═══ HEADER ═══ -->
+<header class="header">
+  <div class="h-logo">🎓</div>
+  <div>
+    <div class="h-title">UTC2</div>
+    <div class="h-sub">Thời khoá biểu sinh viên</div>
+  </div>
+  <div class="h-sem">📅 HK1 2026–2027</div>
+</header>
+
+<!-- ═══ MAIN ═══ -->
+<main class="main">
+  <div class="page-title">
+    <h1>📋 Thời khoá biểu</h1>
+    <p>Học tập hôm nay – Thành công ngày mai</p>
+  </div>
+
+  <div class="err" id="errBar"><span>⚠️</span><span id="errTxt"></span></div>
+
+  <div class="stu-card" id="stuCard">
+    <div class="stu-av">🧑‍🎓</div>
+    <div>
+      <div class="stu-name" id="stuName">—</div>
+      <div class="stu-id" id="stuId">—</div>
     </div>
+    <div class="stu-cnt" id="stuCnt">—</div>
+  </div>
 
-    <div class="sb-student">
-      <div class="sb-avatar">👤</div>
-      <div>
-        <span class="sb-lbl">Xin chào!</span>
-        <span id="sbName">Sinh viên UTC2</span>
-      </div>
-    </div>
+  <div class="search-box">
+    <input id="mssvIn" type="text" placeholder="Nhập MSSV của bạn..." maxlength="20" autocomplete="off"/>
+    <button class="s-btn" id="srchBtn" onclick="doSearch()">🔍 Xem TKB</button>
+  </div>
 
-    <div class="sb-day">
-      <div class="lbl">Hôm nay là</div>
-      <div class="name" id="sbDay">—</div>
-      <div class="date" id="sbDate">—</div>
-    </div>
-
-    <div class="sb-quote">
-      <p id="sbQuote">✨ Học hôm nay, thành công ngày mai!</p>
-    </div>
-  </aside>
-
-  <!-- ═══ MAIN ═══ -->
-  <main class="main">
-
-    <div class="page-hdr">
-      <h1>🌙 Thời khoá biểu</h1>
-      <div class="sub">Học tập hôm nay – Thành công ngày mai ✨</div>
-      <div class="sem-badge">📅 HK1 – 2026/2027 ▾</div>
-    </div>
-
-    <div class="err-bar" id="errBar"><span>⚠️</span><span id="errTxt"></span></div>
-
-    <div class="res-card" id="resCard">
-      <div class="res-avt">🧑‍🎓</div>
-      <div>
-        <div class="res-name" id="resName">—</div>
-        <div class="res-mssv" id="resMssv">—</div>
-      </div>
-      <div class="res-cnt" id="resCnt">—</div>
-    </div>
-
-    <div class="srch">
-      <span class="ico">🔍</span>
-      <input id="mssvIn" type="text" placeholder="Nhập MSSV của bạn..." maxlength="20" autocomplete="off" />
-      <button class="srch-btn" id="srchBtn" onclick="doSearch()">Xem thời khóa biểu ✦</button>
-    </div>
-
-    <div class="cal-wrap">
-      <div class="wk-nav">
-        <button class="wk-btn" onclick="shiftWeek(-1)">←</button>
+  <div class="cal-card">
+    <div class="wk-nav">
+      <button class="wk-btn" onclick="shiftWeek(-1)">‹</button>
+      <div class="wk-center">
         <span class="wk-range" id="wkRange">—</span>
-        <button class="wk-btn" onclick="shiftWeek(1)">→</button>
+        <button class="wk-today" onclick="goToday()">Hôm nay</button>
       </div>
-      <div class="cal-head" id="calHead"></div>
-      <div class="cal-body" id="calBody"></div>
+      <button class="wk-btn" onclick="shiftWeek(1)">›</button>
     </div>
+    <div class="cal-scroll">
+      <div class="cal-grid">
+        <div class="cal-head" id="calHead"></div>
+        <div class="cal-body" id="calBody"></div>
+      </div>
+    </div>
+  </div>
+</main>
 
-  </main>
+<!-- ═══ CAT ═══ -->
+<div class="cat-wrap walk" id="catWrap">
+  <div class="cat-speech" id="catSpeech">Nhập MSSV để xem thời khoá biểu nhé! 🐱</div>
+  <svg class="cat-svg" viewBox="0 0 100 100">
+    <!-- Tail -->
+    <path class="cat-tail" d="M22,72 C8,62 4,46 16,40 C20,38 24,42 20,48" fill="none" stroke="#FF8A58" stroke-width="5.5" stroke-linecap="round"/>
+    <!-- Body -->
+    <ellipse cx="52" cy="72" rx="28" ry="20" fill="#FF8A58"/>
+    <ellipse cx="52" cy="76" rx="16" ry="12" fill="#FFDAB9"/>
+    <!-- Paws -->
+    <ellipse cx="38" cy="88" rx="8" ry="5" fill="#FF8A58"/>
+    <g class="cat-paw-r"><ellipse cx="66" cy="88" rx="8" ry="5" fill="#FF8A58"/></g>
+    <!-- Head -->
+    <circle cx="52" cy="40" r="24" fill="#FF8A58"/>
+    <!-- Ears -->
+    <polygon points="33,28 26,4 46,22" fill="#FF8A58"/>
+    <polygon points="35,25 30,10 44,22" fill="#FFAB91"/>
+    <polygon points="71,28 78,4 58,22" fill="#FF8A58"/>
+    <polygon points="69,25 74,10 60,22" fill="#FFAB91"/>
+    <!-- Eyes -->
+    <ellipse cx="43" cy="38" rx="6" ry="6.5" fill="white"/>
+    <ellipse cx="61" cy="38" rx="6" ry="6.5" fill="white"/>
+    <circle class="cat-pupil-l" cx="44" cy="39" r="3.8" fill="#2D1B0E"/>
+    <circle class="cat-pupil-r" cx="62" cy="39" r="3.8" fill="#2D1B0E"/>
+    <circle cx="46" cy="37" r="1.5" fill="white"/>
+    <circle cx="64" cy="37" r="1.5" fill="white"/>
+    <!-- Blink lids -->
+    <ellipse class="cat-blink-l" cx="43" cy="38" rx="6.5" ry="0" fill="#FF8A58"/>
+    <ellipse class="cat-blink-r" cx="61" cy="38" rx="6.5" ry="0" fill="#FF8A58"/>
+    <!-- Nose -->
+    <ellipse cx="52" cy="47" rx="2.5" ry="2" fill="#FFAB91"/>
+    <!-- Mouth -->
+    <path d="M50,49 Q52,52 54,49" fill="none" stroke="#6D4C41" stroke-width="1" stroke-linecap="round"/>
+    <!-- Whiskers -->
+    <line x1="27" y1="43" x2="40" y2="45" stroke="#6D4C41" stroke-width=".8" stroke-linecap="round"/>
+    <line x1="26" y1="48" x2="39" y2="48" stroke="#6D4C41" stroke-width=".8" stroke-linecap="round"/>
+    <line x1="64" y1="45" x2="77" y2="43" stroke="#6D4C41" stroke-width=".8" stroke-linecap="round"/>
+    <line x1="65" y1="48" x2="78" y2="48" stroke="#6D4C41" stroke-width=".8" stroke-linecap="round"/>
+    <!-- Collar -->
+    <path d="M35,60 Q52,67 69,60" fill="none" stroke="#42A5F5" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="52" cy="64" r="3" fill="#FFD54F"/>
+    <circle cx="52" cy="64" r="1.5" fill="#FFC107"/>
+  </svg>
 </div>
 
 <!-- ═══ MODAL ═══ -->
-<div class="m-overlay" id="mOverlay" onclick="closeModal(event)">
-  <div class="modal">
-    <div class="m-bar" id="mBar"></div>
-    <div class="m-title" id="mTitle"></div>
-    <div class="m-row"><span class="m-ico">🆔</span><div><div class="m-lbl">Mã học phần</div><div class="m-val" id="mCode"></div></div></div>
-    <div class="m-row"><span class="m-ico">👨‍🏫</span><div><div class="m-lbl">Giảng viên</div><div class="m-val" id="mGv"></div></div></div>
-    <div class="m-row"><span class="m-ico">🗓️</span><div><div class="m-lbl">Thời gian học</div><div class="m-val" id="mTime"></div></div></div>
-    <div class="m-row"><span class="m-ico">📅</span><div><div class="m-lbl">Học kỳ (Bắt đầu - Kết thúc)</div><div class="m-val" id="mSem"></div></div></div>
-    <div class="m-row"><span class="m-ico">📍</span><div><div class="m-lbl">Phòng học</div><div class="m-val" id="mRoom"></div></div></div>
-    <button class="m-close" onclick="closeModal()">Đóng</button>
+<div class="m-overlay" id="mOverlay">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="m-color-bar" id="mBar"></div>
+    <div class="m-content">
+      <div class="m-drag"></div>
+      <div class="m-title" id="mTitle"></div>
+      <div class="m-row">
+        <div class="m-ico" style="background:#EFF6FF">🆔</div>
+        <div><div class="m-lbl">Mã học phần</div><div class="m-val" id="mCode"></div></div>
+      </div>
+      <div class="m-row">
+        <div class="m-ico" style="background:#F0FDF4">👨‍🏫</div>
+        <div><div class="m-lbl">Giảng viên</div><div class="m-val" id="mGv"></div></div>
+      </div>
+      <div class="m-row">
+        <div class="m-ico" style="background:#FFF7ED">🗓️</div>
+        <div><div class="m-lbl">Thời gian học</div><div class="m-val" id="mTime"></div></div>
+      </div>
+      <div class="m-row">
+        <div class="m-ico" style="background:#FDF2F8">📅</div>
+        <div><div class="m-lbl">Học kỳ (Bắt đầu – Kết thúc)</div><div class="m-val" id="mSem"></div></div>
+      </div>
+      <div class="m-row">
+        <div class="m-ico" style="background:#ECFDF5">📍</div>
+        <div><div class="m-lbl">Phòng học</div><div class="m-val" id="mRoom"></div></div>
+      </div>
+      <button class="m-close" onclick="closeModal()">Đóng</button>
+    </div>
   </div>
 </div>
 
 <script>
-/* ══════════════════════════════════════════
-   STATE
-══════════════════════════════════════════ */
+/* ═══ STATE ═══ */
 let weekStart = monday(new Date());
 let subjects  = [];
+const DAY_L = ['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'];
+const TIET_H = 52, MAX_TIET = 15;
+const COLORS = ['#3B82F6','#10B981','#EC4899','#F59E0B','#8B5CF6','#14B8A6','#EF4444','#6366F1','#F97316','#06B6D4'];
+const ICONS  = ['💻','⚡','🔬','📐','🧮','📡','🏗️','🔧','🎯','🧪','📚','🎨'];
 
-const DAY_LABELS = ['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'];
-const TIET_H    = 54;
-const MAX_TIET  = 15;
-
-const COLORS = [
-  '#3B82F6','#10B981','#EC4899','#F59E0B','#8B5CF6',
-  '#14B8A6','#EF4444','#6366F1','#F97316','#06B6D4',
-];
-const ICONS = ['💻','⚡','</>','🔬','📐','🧮','📡','🏗️','🔧','🎯','🧪','📚'];
-const QUOTES = [
-  '"Mỗi ngày học tập là một bước tiến đến thành công! 💙"',
-  '"Kiến thức là sức mạnh. Hãy học hết mình hôm nay! 🌟"',
-  '"Đừng ngại khó — hãy coi đó là cơ hội phát triển! 🚀"',
-  '"Học chăm, chơi đúng lúc — bí quyết của người giỏi! ✨"',
-  '"Hôm nay là cơ hội để tốt hơn ngày hôm qua! 💪"',
-];
-
-/* ══════════════════════════════════════════
-   INIT
-══════════════════════════════════════════ */
-(function init() {
-  const DOW = ['Chủ nhật','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'];
-  const today = new Date();
-  document.getElementById('sbDay').textContent  = DOW[today.getDay()];
-  document.getElementById('sbDate').textContent = fmt(today);
-  document.getElementById('sbQuote').textContent = QUOTES[Math.floor(Math.random() * QUOTES.length)];
-
-  renderHead();
-  renderBody([]);
-
-  document.getElementById('mssvIn').addEventListener('keydown', e => {
-    if (e.key === 'Enter') doSearch();
-  });
-
-  const hash = location.hash.replace('#','').trim();
-  if (hash) {
-    document.getElementById('mssvIn').value = hash;
-    doSearch();
-  }
+/* ═══ INIT ═══ */
+(function(){
+  renderHead(); renderBody([]);
+  document.getElementById('mssvIn').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch()});
+  const h=location.hash.replace('#','').trim();
+  if(h){document.getElementById('mssvIn').value=h;doSearch()}
+  // Show initial cat speech
+  setTimeout(()=>showCatSpeech('Nhập MSSV để xem thời khoá biểu nhé! 🐱'),800);
 })();
 
-/* ══════════════════════════════════════════
-   DATE HELPERS
-══════════════════════════════════════════ */
-function monday(d) {
-  const c = new Date(d); c.setHours(0,0,0,0);
-  const dow = c.getDay() || 7;
-  c.setDate(c.getDate() - (dow - 1));
-  return c;
-}
-function add(d, n){ const c=new Date(d); c.setDate(c.getDate()+n); return c; }
-function fmt(d){ return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`; }
-function fmtS(d){ return `${pad(d.getDate())}/${pad(d.getMonth()+1)}`; }
-function pad(n){ return String(n).padStart(2,'0'); }
-function sameDay(a,b){ return a.toDateString()===b.toDateString(); }
-
-function parseDateStr(str) {
-  if (!str) return null;
-  const parts = str.split('/');
-  if (parts.length !== 3) return null;
-  const d = parseInt(parts[0], 10);
-  const m = parseInt(parts[1], 10) - 1;
-  const y = parseInt(parts[2], 10);
-  return new Date(y, m, d);
+/* ═══ DATE HELPERS ═══ */
+function monday(d){const c=new Date(d);c.setHours(0,0,0,0);const dow=c.getDay()||7;c.setDate(c.getDate()-(dow-1));return c}
+function add(d,n){const c=new Date(d);c.setDate(c.getDate()+n);return c}
+function fmt(d){return`${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()}`}
+function fmtS(d){return`${p(d.getDate())}/${p(d.getMonth()+1)}`}
+function p(n){return String(n).padStart(2,'0')}
+function sameDay(a,b){return a.toDateString()===b.toDateString()}
+function parseDS(s){if(!s)return null;const pt=s.split('/');if(pt.length!==3)return null;return new Date(+pt[2],+pt[1]-1,+pt[0])}
+function inWeek(sub,ws){
+  const s=parseDS(sub.NGAY_BD_TG),e=parseDS(sub.NGAY_KT_TG);
+  if(!s||!e)return true;
+  const we=add(ws,6);we.setHours(23,59,59,999);
+  return s<=we&&e>=ws;
 }
 
-function isSubjectInWeek(sub, wStart) {
-  const startDate = parseDateStr(sub.NGAY_BD_TG);
-  const endDate = parseDateStr(sub.NGAY_KT_TG);
-  
-  if (!startDate || !endDate) return true; // Nếu không có ngày, luôn hiện
-  
-  const wEnd = add(wStart, 6);
-  wEnd.setHours(23, 59, 59, 999);
-  
-  // Môn học diễn ra trong tuần nếu: Bắt đầu TRƯỚC KHI tuần kết thúc VÀ Kết thúc SAU KHI tuần bắt đầu
-  return startDate <= wEnd && endDate >= wStart;
-}
-
-/* ══════════════════════════════════════════
-   WEEK NAVIGATION
-══════════════════════════════════════════ */
-function shiftWeek(dir){
-  weekStart = add(weekStart, dir*7);
-  renderHead();
-  renderBody(subjects);
-}
+/* ═══ WEEK NAV ═══ */
+function shiftWeek(d){weekStart=add(weekStart,d*7);renderHead();renderBody(subjects)}
+function goToday(){weekStart=monday(new Date());renderHead();renderBody(subjects)}
 
 function renderHead(){
-  const end   = add(weekStart, 5);
-  const today = new Date(); today.setHours(0,0,0,0);
-
-  document.getElementById('wkRange').textContent =
-    `${fmtS(weekStart)} – ${fmtS(end)}/${weekStart.getFullYear()}`;
-
-  const head = document.getElementById('calHead');
-  head.innerHTML = '';
-
-  const corner = el('div','hd-corner','Tiết');
-  head.appendChild(corner);
-
+  const end=add(weekStart,5),today=new Date();today.setHours(0,0,0,0);
+  document.getElementById('wkRange').textContent=`${fmtS(weekStart)} – ${fmtS(end)}/${weekStart.getFullYear()}`;
+  const hd=document.getElementById('calHead');hd.innerHTML='';
+  hd.appendChild(el('div','hd-corner','Tiết'));
   for(let d=0;d<6;d++){
-    const date  = add(weekStart,d);
-    const isNow = sameDay(date,today);
-    const cell  = el('div', `hd-day${isNow?' today':''}`);
-    cell.innerHTML = `<div class="dn">${DAY_LABELS[d]}</div><div class="dd">${fmtS(date)}</div>`;
-    head.appendChild(cell);
+    const date=add(weekStart,d),isNow=sameDay(date,today);
+    const c=el('div',`hd-day${isNow?' today':''}`);
+    c.innerHTML=`<div class="dn">${DAY_L[d]}</div><div class="dd">${fmtS(date)}</div>`;
+    hd.appendChild(c);
   }
 }
 
-/* ══════════════════════════════════════════
-   PARSE TKB STRING
-══════════════════════════════════════════ */
-function parseTkb(tkbStr){
-  if(!tkbStr) return [];
-  const results = [];
-  const re = /(Thứ [2-7]|Chủ nhật): tiết (\d+) -> (\d+)/g;
-  let m, hits = [];
-  while((m=re.exec(tkbStr))!==null)
-    hits.push({idx:m.index, end:m.index+m[0].length, day:m[1], s:+m[2], e:+m[3]});
-
+/* ═══ PARSE TKB ═══ */
+function parseTkb(s){
+  if(!s)return[];const r=[],re=/(Thứ [2-7]|Chủ nhật): tiết (\d+) -> (\d+)/g;
+  let m,hits=[];
+  while((m=re.exec(s))!==null)hits.push({idx:m.index,end:m.index+m[0].length,day:m[1],s:+m[2],e:+m[3]});
   hits.forEach((h,i)=>{
-    const nxt   = i+1<hits.length ? hits[i+1].idx : tkbStr.length;
-    const after = tkbStr.slice(h.end, nxt);
-    const rm    = after.match(/^\s*\|\s*(.+?)(?:\s*\|.*)?$/);
-    results.push({day:h.day, startTiet:h.s, endTiet:h.e, room: rm ? rm[1].trim() : ''});
+    const nxt=i+1<hits.length?hits[i+1].idx:s.length,after=s.slice(h.end,nxt);
+    const rm=after.match(/^\s*\|\s*(.+?)(?:\s*\|.*)?$/);
+    r.push({day:h.day,startTiet:h.s,endTiet:h.e,room:rm?rm[1].trim():''});
   });
-  return results;
+  return r;
 }
+function dayIdx(l){return DAY_L.indexOf(l)}
 
-function dayIdx(label){ return DAY_LABELS.indexOf(label); }
-
-/* ══════════════════════════════════════════
-   RENDER CALENDAR BODY
-══════════════════════════════════════════ */
+/* ═══ RENDER BODY ═══ */
 function renderBody(subs){
-  const body = document.getElementById('calBody');
-  body.innerHTML = '';
+  const body=document.getElementById('calBody');body.innerHTML='';
+  const co={},io={};
+  subs.forEach((s,i)=>{const k=s.MA_LOP||s.TEN_MON;co[k]=COLORS[i%COLORS.length];io[k]=ICONS[i%ICONS.length]});
 
-  const colorOf = {}, iconOf = {};
-  subs.forEach((s,i)=>{
-    const k = s.MA_LOP||s.TEN_MON;
-    colorOf[k] = COLORS[i%COLORS.length];
-    iconOf[k]  = ICONS [i%ICONS.length];
-  });
-
-  const tc = el('div','tiet-col');
-  for(let t=1;t<=MAX_TIET;t++) tc.appendChild(el('div','tiet-num',String(t)));
+  const tc=el('div','tiet-col');
+  for(let t=1;t<=MAX_TIET;t++)tc.appendChild(el('div','tiet-num',String(t)));
   body.appendChild(tc);
 
-  let displayedCount = 0;
-
+  let cnt=0;
   for(let d=0;d<6;d++){
-    const dc = el('div','day-col');
-    dc.style.height = `${MAX_TIET*TIET_H}px`;
-
-    const bg = el('div','day-col-bg');
-    for(let t=0;t<MAX_TIET;t++) bg.appendChild(el('div','bg-row'));
+    const dc=el('div','day-col');dc.style.height=`${MAX_TIET*TIET_H}px`;
+    const bg=el('div','day-col-bg');
+    for(let t=0;t<MAX_TIET;t++)bg.appendChild(el('div','bg-row'));
     dc.appendChild(bg);
 
     subs.forEach(sub=>{
-      // CHỈ HIỂN THỊ NẾU MÔN HỌC DIỄN RA TRONG TUẦN HIỆN TẠI
-      if (!isSubjectInWeek(sub, weekStart)) {
-        return;
-      }
-
-      const k     = sub.MA_LOP||sub.TEN_MON;
-      const color = colorOf[k]||COLORS[0];
-      const icon  = iconOf[k] ||'📚';
-      const scheds = parseTkb(sub.TKB||sub.LICH_HOC||'');
-
-      scheds.forEach(sc=>{
-        if(dayIdx(sc.day)!==d) return;
-        if(sc.startTiet<1||sc.endTiet>MAX_TIET) return;
-
-        displayedCount++;
-
-        const top = (sc.startTiet-1)*TIET_H + 2;
-        const h   = (sc.endTiet-sc.startTiet+1)*TIET_H - 4;
-
-        const shortName = (sub.TEN_MON||sub.MA_LOP||'')
-          .replace(/(-\d+-\d+.*)$/,'').trim();
-        const roomShort = sc.room ? sc.room.split(' ')[0] : '';
-
-        const card = el('div','sub-card');
-        card.style.cssText = `top:${top}px;height:${h}px;background:${color};box-shadow:0 2px 8px ${color}55;`;
-        card.innerHTML = `
-          <div class="sc-tiet">Tiết ${sc.startTiet}–${sc.endTiet}</div>
-          <div class="sc-name">${shortName||sub.MA_LOP||'?'}</div>
-          ${roomShort?`<div class="sc-room">📍 ${roomShort}</div>`:''}
-          <div class="sc-icon">${icon}</div>
-        `;
+      if(!inWeek(sub,weekStart))return;
+      const k=sub.MA_LOP||sub.TEN_MON,color=co[k]||COLORS[0],icon=io[k]||'📚';
+      parseTkb(sub.TKB||sub.LICH_HOC||'').forEach(sc=>{
+        if(dayIdx(sc.day)!==d||sc.startTiet<1||sc.endTiet>MAX_TIET)return;
+        cnt++;
+        const top=(sc.startTiet-1)*TIET_H+2,h=(sc.endTiet-sc.startTiet+1)*TIET_H-4;
+        const sn=(sub.TEN_MON||sub.MA_LOP||'').replace(/(-\d+-\d+.*)$/,'').trim();
+        const rs=sc.room?sc.room.split(' ')[0]:'';
+        const card=el('div','sub-card');
+        card.style.cssText=`top:${top}px;height:${h}px;background:${color};box-shadow:0 2px 8px ${color}44`;
+        card.innerHTML=`<div class="sc-tiet">Tiết ${sc.startTiet}–${sc.endTiet}</div><div class="sc-name">${sn||sub.MA_LOP||'?'}</div>${rs?`<div class="sc-room">📍 ${rs}</div>`:''}<div class="sc-icon">${icon}</div>`;
         card.addEventListener('click',()=>openModal(sub,sc,color));
         dc.appendChild(card);
       });
     });
-
     body.appendChild(dc);
   }
 
-  // Cập nhật số môn hiển thị trong tuần
-  if (subs.length > 0) {
-     const cntEl = document.getElementById('resCnt');
-     if (cntEl) cntEl.textContent = `Tuần này có ${displayedCount} tiết`;
-  }
-
+  if(subs.length>0){const c=document.getElementById('stuCnt');if(c)c.textContent=`Tuần này: ${cnt} tiết`}
   if(subs.length===0){
-    const ov = el('div','empty-overlay');
-    ov.innerHTML = `
-      <div class="ei">📅</div>
-      <div class="et">Nhập MSSV để xem thời khoá biểu</div>
-      <div class="es">Dùng ô tìm kiếm phía trên rồi bấm <strong>Xem thời khóa biểu</strong></div>
-    `;
+    const ov=el('div','empty-ov fade-in');
+    ov.innerHTML=`<div class="ei">📅</div><div class="et">Nhập MSSV để xem thời khoá biểu</div><div class="es">Dùng ô tìm kiếm phía trên</div>`;
     body.appendChild(ov);
-  } else if (displayedCount === 0) {
-    const ov = el('div','empty-overlay');
-    ov.style.background = 'transparent';
-    ov.innerHTML = `
-      <div class="ei">🏖️</div>
-      <div class="et">Tuần này trống lịch</div>
-      <div class="es">Không có môn nào diễn ra trong tuần này!</div>
-    `;
+  }else if(cnt===0){
+    const ov=el('div','empty-ov fade-in');
+    ov.style.background='transparent';
+    ov.innerHTML=`<div class="ei">🏖️</div><div class="et">Tuần này trống lịch</div><div class="es">Không có môn nào trong tuần này!</div>`;
     body.appendChild(ov);
+    showCatSpeech('Tuần này được nghỉ rồi! Nghỉ ngơi đi 😴');
   }
 }
 
-/* ══════════════════════════════════════════
-   SEARCH
-══════════════════════════════════════════ */
+/* ═══ SEARCH ═══ */
 async function doSearch(){
-  const mssv = document.getElementById('mssvIn').value.trim().toUpperCase();
-  if(!mssv){ showErr('Vui lòng nhập Mã số sinh viên!'); return; }
-
-  hideErr();
-  setLoading(true);
-  document.getElementById('resCard').classList.remove('show');
-  location.hash = mssv;
-
+  const mssv=document.getElementById('mssvIn').value.trim().toUpperCase();
+  if(!mssv){showErr('Vui lòng nhập Mã số sinh viên!');return}
+  hideErr();setL(true);document.getElementById('stuCard').classList.remove('show');
+  location.hash=mssv;
+  showCatSpeech('Đang tìm kiếm... 🔍');
   try{
-    const res  = await fetch(`/api/tkb/${encodeURIComponent(mssv)}`);
-    const json = await res.json();
-
-    if(!json.ok) throw new Error(json.error||'API lỗi');
-
+    const res=await fetch(`/api/tkb/${encodeURIComponent(mssv)}`);
+    const json=await res.json();
+    if(!json.ok)throw new Error(json.error||'API lỗi');
     if(!json.data?.length){
-      showErr(`Không tìm thấy TKB cho MSSV: ${mssv}. Hãy kiểm tra lại!`);
-      subjects = [];
-      renderBody([]);
+      showErr(`Không tìm thấy TKB cho MSSV: ${mssv}`);
+      subjects=[];renderBody([]);
+      showCatSpeech('Không tìm thấy... Thử lại nhé! 😿');
       return;
     }
+    subjects=json.data;
+    const name=json.data[0]?.HO_TEN||'Sinh viên UTC2';
+    document.getElementById('stuName').textContent=name;
+    document.getElementById('stuId').textContent=`MSSV: ${mssv}`;
+    document.getElementById('stuCard').classList.add('show');
 
-    subjects = json.data;
-    const name = json.data[0]?.HO_TEN||'Sinh viên UTC2';
-
-    document.getElementById('sbName').textContent   = name;
-    document.getElementById('resName').textContent  = name;
-    document.getElementById('resMssv').textContent  = `MSSV: ${mssv}`;
-    document.getElementById('resCard').classList.add('show');
-
-    // Chuyển tuần hiện tại về tuần bắt đầu học của môn đầu tiên (nếu có)
-    if (subjects.length > 0 && subjects[0].NGAY_BD_TG) {
-      const firstDate = parseDateStr(subjects[0].NGAY_BD_TG);
-      if (firstDate) {
-        weekStart = monday(firstDate);
-      }
+    if(subjects.length>0&&subjects[0].NGAY_BD_TG){
+      const fd=parseDS(subjects[0].NGAY_BD_TG);
+      if(fd)weekStart=monday(fd);
     }
-
-    renderHead();
-    renderBody(subjects);
-
-  }catch(err){
-    showErr('Lỗi kết nối: '+err.message);
-    subjects=[];
-    renderBody([]);
-  }finally{
-    setLoading(false);
-  }
+    renderHead();renderBody(subjects);
+    showCatSpeech('Nhấn vào môn học để xem chi tiết nhé! 🐾');
+    triggerCatGuide();
+  }catch(e){
+    showErr('Lỗi kết nối: '+e.message);subjects=[];renderBody([]);
+    showCatSpeech('Có lỗi xảy ra... Thử lại nhé! 😿');
+  }finally{setL(false)}
 }
 
-/* ══════════════════════════════════════════
-   MODAL
-══════════════════════════════════════════ */
-function openModal(sub, sc, color){
-  document.getElementById('mBar').style.background  = color;
-  document.getElementById('mTitle').textContent     = sub.TEN_MON||sub.MA_LOP;
-  document.getElementById('mCode').textContent      = sub.MA_LOP||'—';
-  document.getElementById('mGv').textContent        = sub.GIANG_VIEN||'—';
-  document.getElementById('mTime').textContent      =
-    `${sc.day}: Tiết ${sc.startTiet} → ${sc.endTiet}${sc.room?' | '+sc.room:''}`;
-  document.getElementById('mSem').textContent       =
-    `${sub.NGAY_BD_TG||'?'} → ${sub.NGAY_KT_TG||'?'}`;
-  document.getElementById('mRoom').textContent      = sc.room||'—';
+/* ═══ MODAL ═══ */
+function openModal(sub,sc,color){
+  document.getElementById('mBar').style.background=color;
+  document.getElementById('mTitle').textContent=sub.TEN_MON||sub.MA_LOP;
+  document.getElementById('mCode').textContent=sub.MA_LOP||'—';
+  document.getElementById('mGv').textContent=sub.GIANG_VIEN||'—';
+  document.getElementById('mTime').textContent=`${sc.day}: Tiết ${sc.startTiet} → ${sc.endTiet}${sc.room?' | '+sc.room:''}`;
+  document.getElementById('mSem').textContent=`${sub.NGAY_BD_TG||'?'} → ${sub.NGAY_KT_TG||'?'}`;
+  document.getElementById('mRoom').textContent=sc.room||'—';
   document.getElementById('mOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  // Cat happy
+  const cw=document.getElementById('catWrap');
+  cw.classList.add('happy');
+  setTimeout(()=>cw.classList.remove('happy'),700);
 }
-
 function closeModal(e){
-  if(!e||e.target===document.getElementById('mOverlay'))
-    document.getElementById('mOverlay').classList.remove('open');
+  if(e&&e.target!==document.getElementById('mOverlay')&&e.type==='click')return;
+  document.getElementById('mOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.getElementById('mOverlay').addEventListener('click',closeModal);
+
+/* ═══ CAT ═══ */
+let speechTimer=null;
+function showCatSpeech(msg){
+  const sp=document.getElementById('catSpeech');
+  sp.textContent=msg;sp.classList.add('show');
+  clearTimeout(speechTimer);
+  speechTimer=setTimeout(()=>sp.classList.remove('show'),5000);
+}
+function triggerCatGuide(){
+  const cw=document.getElementById('catWrap');
+  cw.classList.add('guide');
+  setTimeout(()=>cw.classList.remove('guide'),6000);
 }
 
-/* ══════════════════════════════════════════
-   UTILS
-══════════════════════════════════════════ */
-function el(tag,cls='',txt=''){
-  const e=document.createElement(tag);
-  if(cls) e.className=cls;
-  if(txt) e.textContent=txt;
-  return e;
-}
-function showErr(msg){
-  document.getElementById('errTxt').textContent=msg;
-  document.getElementById('errBar').classList.add('show');
-}
-function hideErr(){ document.getElementById('errBar').classList.remove('show'); }
-function setLoading(on){
-  const b=document.getElementById('srchBtn');
-  b.disabled=on;
-  b.textContent=on?'⏳ Đang tải...':'Xem thời khóa biểu ✦';
-}
+/* ═══ UTILS ═══ */
+function el(t,c='',txt=''){const e=document.createElement(t);if(c)e.className=c;if(txt)e.textContent=txt;return e}
+function showErr(m){document.getElementById('errTxt').textContent=m;document.getElementById('errBar').classList.add('show')}
+function hideErr(){document.getElementById('errBar').classList.remove('show')}
+function setL(on){const b=document.getElementById('srchBtn');b.disabled=on;b.innerHTML=on?'⏳ Đang tải...':'🔍 Xem TKB'}
 </script>
 </body>
 </html>
